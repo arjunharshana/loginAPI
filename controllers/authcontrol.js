@@ -40,4 +40,46 @@ signUp = async (request, response) => {
   }
 };
 
-verifyOTP = async(req, res);
+verifyOtp = async (request, response) => {
+  try {
+    const { email, otp } = request.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    if (user.isVerified) {
+      return response.status(400).json({
+        message: "User already verified",
+      });
+    }
+
+    if (user.otp != otp) {
+      return response.status(400).json({
+        message: "Invalid OTP",
+      });
+    }
+
+    if (user.otpExpiry < Date.now()) {
+      return response.status(400).json({
+        message: "OTP expired",
+      });
+    }
+
+    user.isVerified = true;
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+
+    await user.save();
+
+    response.status(200).json({
+      message: "Email verified succesfully",
+    });
+  } catch (error) {
+    response.status(500).json({ message: "Server error" });
+  }
+};
