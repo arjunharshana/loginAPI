@@ -29,7 +29,7 @@ signUp = async (request, response) => {
     });
 
     await newUser.save();
-    await sendOTP(email, otp);
+    await sendEmail(email, otp);
 
     response.status(201).json({
       message: "User registered successfully. Please verify your OTP",
@@ -47,7 +47,7 @@ verifyOtp = async (request, response) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({
+      return response.status(404).json({
         message: "User not found",
       });
     }
@@ -119,6 +119,7 @@ login = async (request, response) => {
       user: { id: user._id, username: user.username, email: user.email },
     });
   } catch (error) {
+    console.error("Login error:", error);
     response.status(500).json({ message: "Server error" });
   }
 };
