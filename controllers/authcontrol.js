@@ -122,3 +122,9 @@ login = async (request, response) => {
     response.status(500).json({ message: "Server error" });
   }
 };
+
+module.exports = {
+  signUp,
+  verifyOtp,
+  login,
+};
